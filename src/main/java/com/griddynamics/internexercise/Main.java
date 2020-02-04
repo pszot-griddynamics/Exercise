@@ -8,10 +8,11 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Main {
+
     public static void main(@NotNull String[] args) {
+
         if (args.length != 1) {
-            System.err.println("Invalid arguments. You should specify a file name!");
-            return;
+            throw new IllegalArgumentException("Invalid arguments. You should specify a file name!");
         }
 
         String absoluteApplicationPath = new File(".").toPath().toAbsolutePath().getParent().toString();
@@ -28,6 +29,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
     }
 
     private static int countWords(@NotNull String text) {
