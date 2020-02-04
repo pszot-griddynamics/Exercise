@@ -7,51 +7,80 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class Main {
+public final class Main {
+    /**
+     * Absolute path to application directory.
+     */
+    private static final String ABSOLUTE_APPLICATION_PATH = new File(".")
+            .toPath()
+            .toAbsolutePath()
+            .getParent()
+            .toString();
 
-    public static void main(@NotNull String[] args) {
+    private Main() {
+    }
+
+    /**
+     * Display number of words inside the file provided as an first and only argument.
+     *
+     * @param args Starting parameters
+     * @throws IllegalArgumentException If number of arguments is not equal to 1
+     */
+    public static void main(@NotNull final String[] args) {
 
         if (args.length != 1) {
             throw new IllegalArgumentException("Invalid arguments. You should specify a file name!");
         }
 
-        String absoluteApplicationPath = new File(".").toPath().toAbsolutePath().getParent().toString();
-
         String filePath = args[0];
-        File file = new File(absoluteApplicationPath, filePath);
+
+        File file = findFile(filePath);
+
+        System.out.println(file.getName() + " " + countWords(file));
+
+    }
+
+    /**
+     * Find file according to provided path.
+     *
+     * @param filePath Path to the file that you're looking for.
+     * @return Non null File object created by using {@code ABSOLUTE_APPLICATION_PATH} and parameterized file path.
+     */
+    @NotNull
+    public static File findFile(@NotNull final String filePath) {
+        return new File(ABSOLUTE_APPLICATION_PATH, filePath);
+    }
+
+    /**
+     * Count words inside of provided file.
+     *
+     * @param file Non null File object inside which the words will be counted
+     * @return number of words inside parameterized file
+     */
+    public static int countWords(@NotNull final File file) {
 
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
 
-            int wordCount = bufferedReader.lines().parallel().mapToInt(Main::countWords).sum();
-
-            System.out.println(file.getName() + " " + wordCount);
+            return bufferedReader.lines().parallel().mapToInt(Main::countWords).sum();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
+        return 0;
     }
 
-    private static int countWords(@NotNull String text) {
-        //Text has no whitespace at the end, so to be sure that the function include last word of parameterized line
-        //I'm adding new line symbol at the end
-        text += "\n";
+    /**
+     * Count word inside the String.
+     *
+     * @param text Text for counting
+     * @return Number of words inside the text
+     */
+    public static int countWords(@NotNull final String text) {
+        //Transforming all whitespaces to a single space
+        String trimText = text.replaceAll("\\s+", " ").trim();
 
-        int words = 0;
-        boolean wordFound = false;
-
-        for (char ch : text.toCharArray()) {
-
-            if (Character.isWhitespace(ch)) {
-                if (wordFound) {
-                    words++;
-                    wordFound = false;
-                }
-            } else wordFound = true;
-
-        }
-
-        return words;
+        return (trimText.isBlank() || trimText.isEmpty()) ? 0 : trimText.split(" ").length;
     }
 
 }
