@@ -1,2 +1,8 @@
 # Project exclude paths
 /target/
+.idea/
+.idea/$CACHE_FILE$
+Exercise.iml
+src/main/.DS_Store
+
+
